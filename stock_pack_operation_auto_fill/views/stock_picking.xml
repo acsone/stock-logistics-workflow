@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2017 ACSONE SA/NV
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+
+    <record model="ir.ui.view" id="stock_picking_form_view">
+        <field name="name">stock.picking.form (in stock_pack_operation_auto_fill)</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <button name="do_prepare_partial" position="after">
+                <button name="action_pack_operation_auto_fill"
+                        type="object"
+                        string="Auto fill operations"
+                        attrs="{'invisible': [('action_pack_op_auto_fill_allowed','=', False)]}"/>
+                <field name="action_pack_op_auto_fill_allowed" invisible="1"/>
+            </button>
+        </field>
+    </record>
+
+</odoo>
