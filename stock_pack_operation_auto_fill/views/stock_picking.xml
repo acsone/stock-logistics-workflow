@@ -9,13 +9,14 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
-            <button name="do_prepare_partial" position="after">
+            <field name="recompute_pack_op" position="before">
                 <button name="action_pack_operation_auto_fill"
                         type="object"
                         string="Auto fill operations"
-                        attrs="{'invisible': [('action_pack_op_auto_fill_allowed','=', False)]}"/>
+                        attrs="{'invisible': [('action_pack_op_auto_fill_allowed','=', False)]}"
+                        help="This button will automatically fill all operations that has no tracking set on the product, no processed qty and no selected package."/>
                 <field name="action_pack_op_auto_fill_allowed" invisible="1"/>
-            </button>
+            </field>
         </field>
     </record>
 
