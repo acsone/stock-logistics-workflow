@@ -16,6 +16,4 @@
     'data': [
         'views/stock_picking.xml',
     ],
-    'demo': [
-    ],
 }
