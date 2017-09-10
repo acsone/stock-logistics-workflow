@@ -44,9 +44,8 @@ class StockPicking(models.Model):
             the no product is set on the operation.
             - the operation has no qty_done yet.
         """
-        self.ensure_one()
         self._check_action_pack_operation_auto_fill_allowed()
-        for op in self.pack_operation_ids:
+        for op in self.mapped('pack_operation_ids'):
             if op.lots_visible:
                 continue
             if not op.product_id:
