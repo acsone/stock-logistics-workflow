@@ -12,7 +12,7 @@ default is 0 for each line, you have to write the received quantity on 49
 lines.
 
 In this module we have added a button that helps users to fill automatically
-the schedulled quanties. Then, the user can just change back 
+the scheduled quantities. Then, the user can just change back 
 the quantities for the product that hasn't been received yet.
 
 Usage
@@ -25,7 +25,7 @@ matching the following conditions will be filled automatically:
 
 * The operation has not be processed (i.e `qty_done == 0`).
 
-* The opration has no package set (i.e `package_id` is empty).  
+* The operation has no package set (i.e `package_id` is empty).  
 
 .. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :alt: Try me on Runbot
