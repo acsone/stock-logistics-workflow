@@ -1,6 +1,7 @@
 # Copyright 2022 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
+from odoo.fields import first
 from odoo.tests import Form
 from odoo.tests.common import SavepointCase
 
@@ -20,6 +21,7 @@ class TestSaleOrderDeliverableRate(SavepointCase):
         cls.SaleOrderLine = cls.env["sale.order.line"]
 
         cls.partner = cls.Partner.create({"name": "Customer"})
+
         cls.array_products = [
             {
                 "product": cls.Product.create(
@@ -44,6 +46,10 @@ class TestSaleOrderDeliverableRate(SavepointCase):
             },
         ]
 
+        cls.so_empty = cls.create_basic_so([])
+        cls.so_one_line = cls.create_basic_so(cls.array_products[:1])
+        cls.so_three_line = cls.create_basic_so(cls.array_products)
+
     @classmethod
     def _update_stock(cls, product, qty):
         """
@@ -58,10 +64,11 @@ class TestSaleOrderDeliverableRate(SavepointCase):
         wizard = wizard.save()
         wizard.change_product_qty()
 
-    def create_basic_so(self, array_products):
-        return self.SaleOrder.create(
+    @classmethod
+    def create_basic_so(cls, array_products):
+        return cls.SaleOrder.create(
             {
-                "partner_id": self.partner.id,
+                "partner_id": cls.partner.id,
                 "order_line": [
                     (
                         0,
@@ -86,10 +93,10 @@ class TestSaleOrderDeliverableRate(SavepointCase):
         :return:
         """
         self._update_stock(self.array_products[0]["product"], 10)
-        self.array_products[0]["product_uom_qty"] = 10
-        so = self.create_basic_so(self.array_products[:1])
+        first(self.so_one_line.order_line).product_uom_qty = 10
+        first(self.so_one_line.order_line).qty_delivered = 0
 
-        self.assertEqual(so.deliverable_rate, 100)
+        self.assertEqual(self.so_one_line.deliverable_rate, 100)
 
     def test_partially_deliverable(self):
         """
@@ -99,11 +106,10 @@ class TestSaleOrderDeliverableRate(SavepointCase):
         :return:
         """
         self._update_stock(self.array_products[0]["product"], 8)
-        self.array_products[0]["product_uom_qty"] = 10
-        self.array_products[0]["qty_delivered"] = 0
-        so = self.create_basic_so(self.array_products[:1])
+        first(self.so_one_line.order_line).product_uom_qty = 10
+        first(self.so_one_line.order_line).qty_delivered = 0
 
-        self.assertEqual(so.deliverable_rate, 80)
+        self.assertEqual(self.so_one_line.deliverable_rate, 80)
 
     def test_empty_order(self):
         """
@@ -113,7 +119,7 @@ class TestSaleOrderDeliverableRate(SavepointCase):
         """
         so = self.create_basic_so([])
 
-        self.assertEqual(so.deliverable_rate, 100)
+        self.assertEqual(self.so_empty.deliverable_rate, 100)
 
     def test_all_order_line_delivered(self):
         """
@@ -121,11 +127,10 @@ class TestSaleOrderDeliverableRate(SavepointCase):
         with all order_line delivered is to 100%
         :return:
         """
-        self.array_products[0]["product_uom_qty"] = 10
-        self.array_products[0]["qty_delivered"] = 10
-        so = self.create_basic_so(self.array_products[:1])
+        first(self.so_one_line.order_line).product_uom_qty = 10
+        first(self.so_one_line.order_line).qty_delivered = 10
 
-        self.assertEqual(so.deliverable_rate, 100)
+        self.assertEqual(self.so_one_line.deliverable_rate, 100)
 
     def test_order_line_over_delivered(self):
         """
@@ -134,11 +139,10 @@ class TestSaleOrderDeliverableRate(SavepointCase):
         than product_uom_qty is to 100%
         :return:
         """
-        self.array_products[0]["product_uom_qty"] = 10
-        self.array_products[0]["qty_delivered"] = 11
-        so = self.create_basic_so(self.array_products[:1])
+        first(self.so_one_line.order_line).product_uom_qty = 10
+        first(self.so_one_line.order_line).qty_delivered = 11
 
-        self.assertEqual(so.deliverable_rate, 100)
+        self.assertEqual(self.so_one_line.deliverable_rate, 100)
 
     def test_all_product_no_stock(self):
         """
@@ -148,9 +152,5 @@ class TestSaleOrderDeliverableRate(SavepointCase):
         """
         for product in self.array_products:
             self._update_stock(product["product"], 0)
-            product["product_uom_qty"] = 10
-            product["qty_delivered"] = 0
 
-        so = self.create_basic_so(self.array_products)
-
-        self.assertEqual(so.deliverable_rate, 0)
+        self.assertEqual(self.so_three_line.deliverable_rate, 0)
