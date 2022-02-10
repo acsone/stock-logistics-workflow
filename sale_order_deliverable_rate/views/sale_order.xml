@@ -6,6 +6,7 @@
         <field name="name">sale.order.form (in sale_order_deliverable_rate)</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="priority" eval="90" />
         <field name="arch" type="xml">
             <xpath
                 expr="//field[@name='order_line']/tree//field[@name='product_uom']"
@@ -20,6 +21,7 @@
         <field name="name">sale.order.tree (in sale_order_deliverable_rate)</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_tree" />
+        <field name="priority" eval="90" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_status']" position="after">
                 <field
@@ -34,6 +36,7 @@
         <field name="name">sale.order.search (in sale_order_deliverable_rate)</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_sales_order_filter" />
+        <field name="priority" eval="90" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="deliverable_rate" />
