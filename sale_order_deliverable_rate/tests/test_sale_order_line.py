@@ -3,11 +3,11 @@
 
 from odoo.fields import first
 from odoo.tests.common import SavepointCase
+
 from ..tests.common import TestCommonSale
 
 
 class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
-
     def test_no_more_to_ship(self):
         """
         Ensure that qty_to_ship is to 0 when qty_delivered == product_uom_qty
@@ -30,7 +30,8 @@ class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
         first(self.so_one_line.order_line).qty_delivered = 0
 
         self.assertEqual(
-            first(self.so_one_line.order_line).qty_to_ship, first(self.so_one_line.order_line).product_uom_qty
+            first(self.so_one_line.order_line).qty_to_ship,
+            first(self.so_one_line.order_line).product_uom_qty,
         )
 
     def test_qty_to_ship(self):

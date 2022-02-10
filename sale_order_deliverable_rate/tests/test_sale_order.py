@@ -3,11 +3,11 @@
 
 from odoo.fields import first
 from odoo.tests.common import SavepointCase
+
 from ..tests.common import TestCommonSale
 
 
 class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
-
     def test_totally_deliverable(self):
         """
         Ensure that deliverable_rate of an order is to 100%
@@ -39,7 +39,6 @@ class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
         empty stand for an order with no order_lines
         :return:
         """
-        so = self.create_basic_so([])
 
         self.assertEqual(self.so_empty.deliverable_rate, 100)
 
