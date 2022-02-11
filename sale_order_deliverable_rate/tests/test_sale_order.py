@@ -80,11 +80,7 @@ class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
         """
         Ensure that the filter on deliverable_rate is finding order
         """
-        orders = self.env["sale.order"].search(
-            [("deliverable_rate", "<", 100)]
-        )
+        orders = self.env["sale.order"].search([("deliverable_rate", "<", 100)])
         self.assertTrue(orders)
-        orders = self.env["sale.order"].search(
-            [("deliverable_rate", ">", 0)]
-        )
+        orders = self.env["sale.order"].search([("deliverable_rate", ">", 0)])
         self.assertTrue(orders)
