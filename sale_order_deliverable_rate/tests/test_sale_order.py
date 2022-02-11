@@ -75,3 +75,16 @@ class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
             self._update_stock(product["product"], 0)
 
         self.assertEqual(self.so_three_line.deliverable_rate, 0)
+
+    def test_search_deliverable_rate(self):
+        """
+        Ensure that the filter on deliverable_rate is finding order
+        """
+        orders = self.env["sale.order"].search(
+            [("deliverable_rate", "<", 100)]
+        )
+        self.assertTrue(orders)
+        orders = self.env["sale.order"].search(
+            [("deliverable_rate", ">", 0)]
+        )
+        self.assertTrue(orders)
