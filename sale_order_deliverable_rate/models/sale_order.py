@@ -4,9 +4,10 @@ from odoo import fields, models
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    deliverable_rate = fields.Integer(
+    deliverable_rate = fields.Float(
         compute="_compute_deliverable_rate",
         search="_search_deliverable_rate",
+        digits="Sale order deliverable rate",
         store=False,
     )
 

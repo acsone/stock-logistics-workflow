@@ -4,8 +4,15 @@ from odoo import api, fields, models
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
-    qty_to_ship = fields.Integer(compute="_compute_qty_to_ship", store=True)
-    deliverable_rate = fields.Integer(compute="_compute_deliverable_rate", store=False)
+    qty_to_ship = fields.Float(
+        compute="_compute_qty_to_ship", store=True, digits="Product Unit of Measure",
+    )
+
+    deliverable_rate = fields.Float(
+        compute="_compute_deliverable_rate",
+        store=False,
+        digits="Sale order deliverable rate",
+    )
 
     @api.depends("product_uom_qty", "qty_delivered")
     def _compute_qty_to_ship(self):

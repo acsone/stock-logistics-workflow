@@ -13,7 +13,7 @@
                 position="after"
             >
                 <field name="deliverable_rate" optional="hide" />
-                <field name="qty_to_ship" invisible="1" />
+                <field name="qty_to_ship" />
             </xpath>
         </field>
     </record>
@@ -27,7 +27,7 @@
                 <field
                     name="deliverable_rate"
                     widget="progressbar"
-                    options="{'current_value': 'deliverable_rate', 'max_value': '100', 'editable': false}"
+                    options="{'current_value': 'deliverable_rate', 'max_value': '100.0', 'editable': false}"
                 />
             </xpath>
         </field>
