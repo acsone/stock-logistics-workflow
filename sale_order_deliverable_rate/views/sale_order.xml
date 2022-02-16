@@ -8,12 +8,19 @@
         <field name="inherit_id" ref="sale.view_order_form" />
         <field name="priority" eval="90" />
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field
+                    name="deliverable_rate"
+                    string="Deliverable Rate"
+                    widget="percentpie"
+                />
+            </xpath>
             <xpath
                 expr="//field[@name='order_line']/tree//field[@name='product_uom']"
                 position="after"
             >
                 <field name="deliverable_rate" optional="hide" />
-                <field name="qty_to_ship" />
+                <field name="qty_to_ship" invisible="1" />
             </xpath>
         </field>
     </record>
@@ -43,15 +50,16 @@
             </xpath>
             <xpath expr="//field[@name='analytic_account_id']" position="after">
                 <filter
-                    string="Deliverable"
+                    string="Deliverable (100%)"
                     domain="[('deliverable_rate', '=', 100)]"
                     name="deliverable_rate_100_filter"
                 />
                 <filter
-                    string="Partially deliverable"
+                    string="Partially deliverable (>=80%)"
                     domain="[('deliverable_rate', '&gt;=', 80),('deliverable_rate','&lt;=',99)]"
                     name="deliverable_rate_partially_filter"
                 />
+                <separator />
             </xpath>
         </field>
     </record>

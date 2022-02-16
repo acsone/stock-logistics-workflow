@@ -14,8 +14,10 @@ class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
         :return:
         """
         self._update_stock(self.array_products[0]["product"], 10)
-        first(self.so_one_line.order_line).product_uom_qty = 10
-        first(self.so_one_line.order_line).qty_delivered = 10
+
+        first(self.so_one_line.order_line).write(
+            {"product_uom_qty": 10, "qty_delivered": 10}
+        )
 
         self.assertEqual(first(self.so_one_line.order_line).qty_to_ship, 0)
 
@@ -26,8 +28,10 @@ class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
         :return:
         """
         self._update_stock(self.array_products[0]["product"], 10)
-        first(self.so_one_line.order_line).product_uom_qty = 10
-        first(self.so_one_line.order_line).qty_delivered = 0
+
+        first(self.so_one_line.order_line).write(
+            {"product_uom_qty": 10, "qty_delivered": 0}
+        )
 
         self.assertEqual(
             first(self.so_one_line.order_line).qty_to_ship,
@@ -40,8 +44,10 @@ class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
         :return:
         """
         self._update_stock(self.array_products[0]["product"], 10)
-        first(self.so_one_line.order_line).product_uom_qty = 10
-        first(self.so_one_line.order_line).qty_delivered = 5
+
+        first(self.so_one_line.order_line).write(
+            {"product_uom_qty": 10, "qty_delivered": 5}
+        )
 
         self.assertEqual(
             first(self.so_one_line.order_line).qty_to_ship,
@@ -56,8 +62,10 @@ class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
         :return:
         """
         self._update_stock(self.array_products[0]["product"], 10)
-        first(self.so_one_line.order_line).product_uom_qty = 10
-        first(self.so_one_line.order_line).qty_delivered = 11
+
+        first(self.so_one_line.order_line).write(
+            {"product_uom_qty": 10, "qty_delivered": 11}
+        )
 
         self.assertLess(first(self.so_one_line.order_line).qty_to_ship, 0)
 
@@ -68,8 +76,10 @@ class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
         :return:
         """
         self._update_stock(self.array_products[0]["product"], 10)
-        first(self.so_one_line.order_line).product_uom_qty = 10
-        first(self.so_one_line.order_line).qty_delivered = 0
+
+        first(self.so_one_line.order_line).write(
+            {"product_uom_qty": 10, "qty_delivered": 0}
+        )
 
         self.assertEqual(first(self.so_one_line.order_line).deliverable_rate, 100)
 
@@ -80,7 +90,9 @@ class TestSaleOrderDeliverableRate(TestCommonSale, SavepointCase):
         :return:
         """
         self._update_stock(self.array_products[0]["product"], 5)
-        first(self.so_one_line.order_line).product_uom_qty = 10
-        first(self.so_one_line.order_line).qty_delivered = 0
+
+        first(self.so_one_line.order_line).write(
+            {"product_uom_qty": 10, "qty_delivered": 0}
+        )
 
         self.assertEqual(first(self.so_one_line.order_line).deliverable_rate, 50)
