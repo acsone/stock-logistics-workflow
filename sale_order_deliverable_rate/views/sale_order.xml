@@ -9,11 +9,7 @@
         <field name="priority" eval="90" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='payment_term_id']" position="after">
-                <field
-                    name="deliverable_rate"
-                    string="Deliverable Rate"
-                    widget="percentpie"
-                />
+                <field name="deliverable_rate" widget="percentpie" />
             </xpath>
             <xpath
                 expr="//field[@name='order_line']/tree//field[@name='product_uom']"
