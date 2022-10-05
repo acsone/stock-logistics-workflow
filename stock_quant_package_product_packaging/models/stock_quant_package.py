@@ -21,9 +21,11 @@ class StockQuantPackage(models.Model):
         "transfers, put-away rules, ...",
     )
     single_product_id = fields.Many2one(
-        "product.product", compute="_compute_single_product"
+        "product.product", compute="_compute_single_product", groups="base.group_no_one"
     )
-    single_product_qty = fields.Float(compute="_compute_single_product")
+    single_product_qty = fields.Float(
+        compute="_compute_single_product", groups="base.group_no_one"
+    )
 
     @api.depends("quant_ids", "quant_ids.product_id")
     def _compute_single_product(self):
