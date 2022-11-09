@@ -21,8 +21,11 @@ class TestStockPickinStart(TransactionCase):
         cls.loc_stock = cls.wh.lot_stock_id
         cls.loc_customer = cls.env.ref("stock.stock_location_customers")
         cls.picking_type = cls.env.ref("stock.picking_type_out")
-        cls.product = cls.env["product.product"].create(
-            {"name": "Test product", "type": "product"}
+        cls.product_1 = cls.env["product.product"].create(
+            {"name": "Test product 1", "type": "product"}
+        )
+        cls.product_2 = cls.env["product.product"].create(
+            {"name": "Test product 2", "type": "product"}
         )
         cls.picking = cls.env["stock.picking"].create(
             {
@@ -35,7 +38,7 @@ class TestStockPickinStart(TransactionCase):
                         0,
                         {
                             "name": "test move",
-                            "product_id": cls.product.id,
+                            "product_id": cls.product_1.id,
                             "product_uom_qty": 5,
                             "location_id": cls.loc_stock.id,
                             "location_dest_id": cls.loc_customer.id,
@@ -44,6 +47,29 @@ class TestStockPickinStart(TransactionCase):
                 ],
             }
         )
+
+        cls.assigned_picking = cls.env["stock.picking"].create(
+            {
+                "picking_type_id": cls.picking_type.id,
+                "location_id": cls.loc_stock.id,
+                "location_dest_id": cls.loc_customer.id,
+                "move_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": "test move",
+                            "product_id": cls.product_2.id,
+                            "product_uom_qty": 5,
+                            "location_id": cls.loc_stock.id,
+                            "location_dest_id": cls.loc_customer.id,
+                        },
+                    )
+                ],
+            }
+        )
+        cls._update_qty_in_location(cls.loc_stock, cls.product_2, 5)
+        cls.assigned_picking.action_assign()
 
     @classmethod
     def _update_qty_in_location(cls, location, product, quantity):
@@ -66,7 +92,7 @@ class TestStockPickinStart(TransactionCase):
         with self.assertRaisesRegex(UserError, "can't be started"):
             self.picking.action_start()
         # makes product partially available
-        self._update_qty_in_location(self.loc_stock, self.product, 3)
+        self._update_qty_in_location(self.loc_stock, self.product_1, 3)
         self.picking.action_assign()
         self.assertEqual(self.picking.state, "assigned")
         self.assertTrue(self.picking.action_start_allowed)
@@ -79,11 +105,9 @@ class TestStockPickinStart(TransactionCase):
 
     def test_picking_start(self):
         # makes the product available
-        self._update_qty_in_location(self.loc_stock, self.product, 5)
-        self.picking.action_assign()
-        self.assertEqual(self.picking.state, "assigned")
-        self.picking.action_start()
-        self.assertTrue(self.picking.printed)
+        self.assertEqual(self.assigned_picking.state, "assigned")
+        self.assigned_picking.action_start()
+        self.assertTrue(self.assigned_picking.printed)
 
     def test_picking_start_default_operator(self):
         # by default current user is proposed by default as operator
@@ -94,16 +118,54 @@ class TestStockPickinStart(TransactionCase):
         self.assertTrue(self.picking.default_get(["user_id"]))
 
     def test_picking_start_set_operator(self):
-        self._update_qty_in_location(self.loc_stock, self.product, 5)
-        self.picking.action_assign()
-        self.assertFalse(self.picking.user_id)
+        self.assertFalse(self.assigned_picking.user_id)
         # by default the action start does not set the operator
-        self.picking.action_start()
-        self.assertRecordValues(self.picking, [{"user_id": False, "printed": True}])
-        self.picking.printed = False
+        self.assigned_picking.action_start()
+        self.assertRecordValues(
+            self.assigned_picking, [{"user_id": False, "printed": True}]
+        )
+        self.assigned_picking.printed = False
         # we set the company to assign operator at picking start
         self.env.user.company_id.stock_picking_assign_operator_at_start = True
-        self.picking.action_start()
+        self.assigned_picking.action_start()
         self.assertRecordValues(
-            self.picking, [{"user_id": self.env.uid, "printed": True}]
+            self.assigned_picking, [{"user_id": self.env.uid, "printed": True}]
         )
+
+    def test_picking_cancel_start(self):
+        # makes the product available
+        self.assigned_picking.user_id = self.env.uid
+        self.assertEqual(self.assigned_picking.state, "assigned")
+        self.assigned_picking.action_start()
+        self.assertTrue(self.assigned_picking.started)
+        self.assertRecordValues(
+            self.assigned_picking, [{"printed": True, "user_id": self.env.uid}]
+        )
+        self.assigned_picking.action_cancel_start()
+        self.assertRecordValues(
+            self.assigned_picking, [{"printed": False, "user_id": self.env.uid}]
+        )
+        self.assertFalse(self.assigned_picking.started)
+
+    def test_picking_cancel_start_reset_operator(self):
+        # we set the company to set the operator at picking start
+        self.env.user.company_id.stock_picking_assign_operator_at_start = True
+        self.assertEqual(self.assigned_picking.state, "assigned")
+        self.assigned_picking.action_start()
+        self.assertTrue(self.assigned_picking.started)
+        self.assertRecordValues(
+            self.assigned_picking, [{"printed": True, "user_id": self.env.uid}]
+        )
+        self.assigned_picking.action_cancel_start()
+        # the operator must also be reset
+        self.assertRecordValues(
+            self.assigned_picking, [{"printed": False, "user_id": False}]
+        )
+        self.assertFalse(self.assigned_picking.started)
+
+    def test_picking_action_cancel_start_allowed(self):
+        self.assertFalse(self.assigned_picking.action_cancel_start_allowed)
+        with self.assertRaisesRegex(UserError, "can't be cancelled"):
+            self.assigned_picking.action_cancel_start()
+        self.assigned_picking.action_start()
+        self.assertTrue(self.assigned_picking.action_cancel_start_allowed)

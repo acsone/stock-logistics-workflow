@@ -18,7 +18,53 @@
                     class="oe_highlight"
                 />
             </xpath>
+            <div name="button_box" position="after">
+                <field name="started" invisible="1" />
+                <widget
+                    name="web_ribbon"
+                    title="Started"
+                    bg_color="bg-success"
+                    attrs="{'invisible': [('started', '=', False)]}"
+                />
+            </div>
+            <xpath expr="//header/button[last()]" position="after">
+                <field name="action_cancel_start_allowed" invisible="1" />
+                <button
+                    name="action_cancel_start"
+                    string="Cancel Start"
+                    type="object"
+                    attrs="{'invisible': [('action_cancel_start_allowed', '!=', True)]}"
+                />
+            </xpath>
         </field>
     </record>
-
+    <record model="ir.ui.view" id="view_picking_internal_search">
+        <field
+            name="name"
+        >stock.picking.internal.search (in stock_picking_start)</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search" />
+        <field name="arch" type="xml">
+            <filter name="available" position="after">
+                <filter
+                    name="staretd"
+                    string="Started"
+                    domain="[('started', '=', True)]"
+                />
+            </filter>
+        </field>
+    </record>
+    <record id="stock_picking_tree_view" model="ir.ui.view">
+        <field name="name">stock.picking.tree (in stock_picking_start)</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree" />
+        <field name="arch" type="xml">
+            <tree position="attributes">
+                <attribute name="decoration-success">started</attribute>
+            </tree>
+            <tree position="inside">
+                <field name="started" invisible="1" />
+            </tree>
+        </field>
+    </record>
 </odoo>
