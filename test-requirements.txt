@@ -1,1 +1,2 @@
 odoo-test-helper
+odoo-addon-delivery-procurement-group-carrier @ git+https://github.com/OCA/stock-logistics-workflow.git@refs/pull/1158/head#subdirectory=setup/delivery_procurement_group_carrier
