@@ -40,14 +40,55 @@ class TestGroupMaxWeight(TransactionCase):
         Add a new product
         New move should be assigned to a new picking
         """
-        self.product.weight = 9.0
-        self.product_2.weight = 9.0
+        self.product.weight = 6.0
+        self.product_2.weight = 3.0
         self.product_3.weight = 9.0
         sale = self._get_new_sale_order(amount=1.0)
         sale.action_confirm()
         self.assertEqual(1, len(sale.picking_ids))
+        self.assertEqual(2.0, sale.picking_ids.assignation_max_weight)
         with Form(sale) as sale_form:
             self._set_line(sale_form, self.product_2, 1.0)
+        self.assertEqual(2, len(sale.picking_ids))
+
+        # Change the strategy, check if the number of pickings still == 2
+        self.picking_type_out.group_pickings_maxweight = 0
+        with Form(sale) as sale_form:
+            self._set_line(sale_form, self.product_3, 1.0)
+
+        self.assertEqual(2, len(sale.picking_ids))
+
+    def test_group_max_weight_several_quantities(self):
+        """
+        Create a Sale order with first product
+        Confirm the Sale Order
+        Add a new product (3.0)
+        Weight is <= 8.0 (3 * 6.0)
+        Add the same product (1.0)
+        Weight is <= 8.0, same picking is used
+        Add the same product (1.0)
+        Weight is > 8.0, new picking is created
+        Deactivate maximum weight
+        The new move is affected to the same picking
+        """
+        self.product.weight = 2.0
+        self.product_3.weight = 30.0
+        sale = self._get_new_sale_order(amount=3.0)
+        sale.action_confirm()
+        # Check assignation max weight
+        self.assertEqual(2.0, sale.picking_ids.assignation_max_weight)
+        self.assertEqual(1, len(sale.picking_ids))
+
+        # We can still add a product move with a weight <= 2.0
+        with Form(sale) as sale_form:
+            self._set_line(sale_form, self.product, 1.0)
+        self.assertEqual(1, len(sale.picking_ids))
+        self.assertEqual(8.0, sale.picking_ids.weight)
+
+        # Picking max weight is set, the new move will go into a new picking
+        self.assertEqual(0.0, sale.picking_ids.assignation_max_weight)
+        with Form(sale) as sale_form:
+            self._set_line(sale_form, self.product, 1.0)
         self.assertEqual(2, len(sale.picking_ids))
 
         # Change the strategy, check if the number of pickings still == 2

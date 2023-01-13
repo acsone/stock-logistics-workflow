@@ -18,7 +18,7 @@ class StockMove(models.Model):
             domain = AND(
                 [
                     domain,
-                    [("weight", "<=", self.picking_type_id.group_pickings_maxweight)],
+                    [("assignation_max_weight", ">=", self.weight)],
                 ]
             )
         return domain
