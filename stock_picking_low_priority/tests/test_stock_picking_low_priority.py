@@ -62,42 +62,51 @@ class TestStockPickingLowPriority(TransactionCase):
     def test_assign_qty_to_first_move(self):
         """
         Suppose two out picking waiting for an available quantity. When receiving such
-        a quantity, the latter should be assign to the picking with the
+        a quantity, the latter should be assigned to the picking with the
         highest priority.
         """
 
-        out01 = self.create_picking(
+        # Create two out picking. One planned fot today and the other for tomorrow
+        out_today = self.create_picking(
             self.picking_type_out, self.stock_location, self.customer_location
         )
-        out02 = self.create_picking(
+        out_tomorrow = self.create_picking(
             self.picking_type_out,
             self.stock_location,
             self.customer_location,
             sequence=2,
             delay=1,
         )
+        # at this stage, the product is not available
+        # We create a picking in to receive the product
         in01 = self.create_picking(
-            self.picking_type_in, self.supplier_location, self.stock_location, delay=2
+            self.picking_type_in, self.supplier_location, self.stock_location
         )
-        # normal priority for both out01 and out02 so out01 will be assigned before out02
         in01.move_ids.quantity_done = 1
         in01.button_validate()
-        self.assertEqual(out01.state, "assigned")
-        self.assertEqual(out02.state, "confirmed")
 
-        out01.move_ids.quantity_done = 1
-        out01.button_validate()
+        # since the two out pickings are waiting for the same product, and
+        # the priority of the 2 pickings are the same, the product should be
+        # assigned to the first picking (out_today)
+        self.assertEqual(out_today.state, "assigned")
+        self.assertEqual(out_tomorrow.state, "confirmed")
 
-        out03 = self.create_picking(
-            self.picking_type_out, self.stock_location, self.customer_location, delay=3
+        # we create a new out picking for the day after tomorrow
+        out_after_tomorrow = self.create_picking(
+            self.picking_type_out, self.stock_location, self.customer_location, delay=2
         )
-        # set out02 to not urgent so out03 will be assigned before out02
-        out02.priority = "-1"
+        # and we set out_tomorrow to not urgent so out_after_tomorrow will be
+        # assigned before out_tomorrow even if the picking has been created after
+        # out_tomorrow
+        out_tomorrow.priority = "-1"
+
+        # we create a new picking in to receive the product
         in02 = self.create_picking(
-            self.picking_type_in, self.supplier_location, self.stock_location, delay=4
+            self.picking_type_in, self.supplier_location, self.stock_location
         )
-
         in02.move_ids.quantity_done = 1
         in02.button_validate()
-        self.assertEqual(out03.state, "assigned")
-        self.assertEqual(out02.state, "confirmed")
+
+        # we check that the product is assigned to the out_after_tomorrow
+        self.assertEqual(out_after_tomorrow.state, "assigned")
+        self.assertEqual(out_tomorrow.state, "confirmed")
