@@ -4,6 +4,8 @@
 from odoo import fields
 from odoo.tests import TransactionCase
 
+from ..models.stock_picking import LOW_PRIORITY_VALUE
+
 
 class TestStockPickingLowPriority(TransactionCase):
     @classmethod
@@ -57,7 +59,7 @@ class TestStockPickingLowPriority(TransactionCase):
         selection
         """
         priority_selection = self.picking_model.fields_get()["priority"]["selection"]
-        self.assertEqual(priority_selection[0], ("-1", "Not urgent"))
+        self.assertEqual(priority_selection[0], (LOW_PRIORITY_VALUE, "Not urgent"))
 
     def test_assign_qty_to_first_move(self):
         """
@@ -98,7 +100,7 @@ class TestStockPickingLowPriority(TransactionCase):
         # and we set out_tomorrow to not urgent so out_after_tomorrow will be
         # assigned before out_tomorrow even if the picking has been created after
         # out_tomorrow
-        out_tomorrow.priority = "-1"
+        out_tomorrow.priority = LOW_PRIORITY_VALUE
 
         # we create a new picking in to receive the product
         in02 = self.create_picking(

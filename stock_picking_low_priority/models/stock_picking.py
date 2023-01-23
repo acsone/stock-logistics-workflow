@@ -3,10 +3,13 @@
 
 from odoo import fields, models
 
+from .stock_move import LOW_PRIORITY_VALUE
 
-class Picking(models.Model):
+
+class StockPicking(models.Model):
     _inherit = "stock.picking"
 
     priority = fields.Selection(
-        selection_add=[("-1", "Not urgent"), ("0",)], ondelete={"-1": "set default"}
+        selection_add=[(LOW_PRIORITY_VALUE, "Not urgent"), ("0",)],
+        ondelete={LOW_PRIORITY_VALUE: "set default"},
     )
