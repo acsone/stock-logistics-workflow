@@ -11,6 +11,7 @@ class StockPicking(models.Model):
     customer_id = fields.Many2one(
         comodel_name="res.partner",
         index=True,
+        readonly=True,
     )
     customer_id_visible = fields.Boolean(
         compute="_compute_customer_id_visible",
