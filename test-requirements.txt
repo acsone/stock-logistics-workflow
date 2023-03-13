@@ -1,1 +1,2 @@
 odoo-test-helper
+odoo-addon-stock-picking-kind @ git+https://github.com/oca/stock-logistics-workflow.git@refs/pull/1254/head#subdirectory=setup/stock_picking_kind
