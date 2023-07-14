@@ -1,1 +1,2 @@
 odoo-test-helper
+odoo-addon-product-packaging-dimension @ git+https://github.com/OCA/product-attribute@refs/pull/1386/head#subdirectory=setup/product_packaging_dimension
