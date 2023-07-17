@@ -1,1 +1,2 @@
 odoo-test-helper
+openupgradelib @ git+https://github.com/OCA/openupgradelib.git@master
