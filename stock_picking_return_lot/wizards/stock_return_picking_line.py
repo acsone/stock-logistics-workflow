@@ -13,6 +13,7 @@ class StockReturnPickingLine(models.TransientModel):
         string="Lot/Serial Number",
         domain="[('product_id', '=', product_id)]",
     )
+    origin = fields.Char(related="move_id.origin", readonly=True)
     lots_visible = fields.Boolean(compute="_compute_lots_visible")
 
     @api.depends("product_id.tracking")
