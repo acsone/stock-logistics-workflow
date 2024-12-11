@@ -167,7 +167,12 @@ class StockPicking(models.Model):
                 "Merged procurement for partners: %(partners_name)s",
                 partners_name=", ".join(partners.mapped("display_name")),
             )
-        return {"sale_ids": [(6, 0, sales.ids)], "name": name, "is_merged": True}
+        return {
+            "sale_ids": [(6, 0, sales.ids)],
+            "name": name,
+            "is_merged": True,
+            "sale_id": False,
+        }
 
     def _merge_procurement_groups(self):
         self.ensure_one()
