@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2025 ACSONE SA/NV
+     License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+    <!-- create xml ids for demo data that are widely used in tests or in other codes, for more convenience -->
+    <function model="ir.model.data" name="_update_xmlids">
+        <value
+            model="base"
+            eval="[{
+            'xml_id': 'stock_lot_auto_remove.picking_type_lot_removal',
+            'record': obj().env.ref('stock.warehouse0').lar_picking_type_id,
+            'noupdate': True,
+        }]"
+        />
+    </function>
+</odoo>
