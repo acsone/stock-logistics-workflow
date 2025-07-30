@@ -18,10 +18,14 @@
         "stock_picking_volume",  # OCA/stock-logistics-warehouse
     ],
     "data": [
+        "views/picking_batch_abstract.xml",
         "views/stock_device_type.xml",
         "views/stock_picking_batch.xml",
         "views/stock_picking.xml",
+        "views/stock_picking_batch_creation_profile.xml",
         "wizards/make_picking_batch.xml",
+        "wizards/make_picking_batch_profile.xml",
+        "views/menus.xml",
         "security/ir.model.access.csv",
     ],
     "assets": {

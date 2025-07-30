@@ -4,7 +4,7 @@
 import math
 from collections import defaultdict
 
-from odoo import fields, models, tools
+from odoo import api, fields, models, tools
 from odoo.osv.expression import AND, OR, expression
 
 from ..exceptions import (
@@ -42,6 +42,25 @@ class MakePickingBatch(models.TransientModel):
         "_remaining_nbr_bins",
         "_previous_selected_picking",
     )
+
+    @api.model
+    def action_launch_picking_batch(self):
+        """
+        Launch the wizard through action server.
+        If a profile is found, launch the profile selection
+        """
+        profiles_count = self.env["stock.picking.batch.creation.profile"].search_count(
+            []
+        )
+        if not profiles_count:
+            action = self.env["ir.actions.act_window"]._for_xml_id(
+                "stock_picking_batch_creation.make_picking_batch_act_window"
+            )
+        else:
+            action = self.env["ir.actions.act_window"]._for_xml_id(
+                "stock_picking_batch_creation.make_picking_batch_profile_act_window"
+            )
+        return action
 
     def __init__(self, env, ids=(), prefetch_ids=()):
         super().__init__(env, ids=ids, prefetch_ids=prefetch_ids)
