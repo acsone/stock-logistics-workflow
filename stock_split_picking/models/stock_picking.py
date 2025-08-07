@@ -4,7 +4,7 @@
 
 from odoo import _, models
 from odoo.exceptions import UserError
-from odoo.tools.float_utils import float_compare
+from odoo.tools.float_utils import float_compare, float_is_zero
 
 from ..exceptions import NotPossibleToSplitPickError, SplitPickNotAllowedInStateError
 
@@ -33,6 +33,7 @@ class StockPicking(models.Model):
 
             # Split moves considering the qty_done on moves
             new_moves = self.env["stock.move"]
+            moves2remove = self.env["stock.move"]
             for move in picking.move_ids:
                 rounding = move.product_uom.rounding
                 qty_done = move.quantity_done
@@ -64,6 +65,9 @@ class StockPicking(models.Model):
                     else:
                         new_move = move
                     new_moves |= new_move
+                    # Remove the move if the quantity is 0
+                    if float_is_zero(qty_done, precision_rounding=rounding):
+                        moves2remove |= move
 
             # If we have new moves to move, create the backorder picking
             if new_moves:
@@ -73,6 +77,13 @@ class StockPicking(models.Model):
                     {"picking_id": backorder_picking.id}
                 )
                 new_moves._action_confirm(merge=False)
+            
+            for move2remove in moves2remove:
+                if move2remove.exists():
+                    # You can not delete moves linked to another operation,
+                    # first cancel the move and then delete it.
+                    move2remove._action_cancel()
+                    move2remove.unlink()
 
     def _create_split_backorder(self, default=None):
         """Copy current picking with defaults passed, post message about
