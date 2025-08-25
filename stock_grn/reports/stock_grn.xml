@@ -5,7 +5,11 @@
     <template id="label_stock_grn">
         <t t-set="curr_date" t-value="datetime.datetime.today()" />
         <t t-foreach="docs" t-as="grn">
-
+          <t
+                t-set="total"
+                t-value="(grn.qty_box + grn.qty_pallet) if (grn.qty_box or grn.qty_pallet) else 1"
+            />
+            <t t-foreach="range(1, total + 1, 1)" t-as="number">
 ^XA
 <t t-name="supplier_name">
 ^CF0,60
@@ -17,20 +21,33 @@
 </t>
 <t t-name="origin">
 ^FO10,150^FDORIGIN: <t
-                    t-esc="','.join([origin for origin in grn.picking_ids.mapped('origin') if origin])"
-                />^FS
+                        t-esc="','.join([origin for origin in grn.picking_ids.mapped('origin') if origin])"
+                    />^FS
 </t>
-<t t-name="grn_name">
-^FO10,185^FDGRN: <t t-esc="grn.name" />^FS
+<t t-name="grn_supplier">
+^FO10,185^FDSUPPLIER REF: <t t-esc="delivery_note_supplier_number" />^FS
 </t>
 <t t-name="grn_date">
 ^FO10,220^FDDATE: <t t-esc="curr_date" t-options='{"widget": "date"}' />^FS
 </t>
+<t t-name="grn_boxes">
+^FO10,255^FDBOXES: <t t-esc="grn.qty_box" />^FS
+</t>
+<t t-name="grn_pallets">
+^FO10,290^FDPALLETS: <t t-esc="grn.qty_pallet" />^FS
+</t>
+<t t-name="grn_number">
+^FO450,325^FDNUMBER: <t t-esc="number" /> / <t t-esc="total" /> ^FS
+</t>
 <t t-name="grn_qr">
 ^BQN,2,6,M,7
-^FO500,50^FH^FDQA,<t t-esc="grn.name" />^FS
+^FO500,115^FH^FDQA,<t t-esc="grn.name" />^FS
+</t>
+<t t-name="grn_name">
+^FO450,290^FDGRN: <t t-esc="grn.name" />^FS
 </t>
 ^XZ
+          </t>
         </t>
     </template>
 
