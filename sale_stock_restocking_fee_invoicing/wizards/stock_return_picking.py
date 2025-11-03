@@ -40,11 +40,10 @@ class StockReturnPicking(models.TransientModel):
         for move in self.product_return_moves:
             move.charge_restocking_fee = self.charge_restocking_fee
 
-    def _create_returns(self):
-        new_picking_id, new_picking_type_id = super()._create_returns()
+    def _create_return(self):
+        new_picking = super()._create_return()
         self.ensure_one()
         if self.is_customer_return:
-            new_picking = self.env["stock.picking"].browse(new_picking_id)
             # we must update the stock moves after the creation since there is
             # no hooks where to enrich the data used to create the moves :-(
             new_move_by_returned_move = {
@@ -57,4 +56,4 @@ class StockReturnPicking(models.TransientModel):
                 new_move.charge_restocking_fee = return_line_by_returned_move[
                     returned_move
                 ].charge_restocking_fee
-        return new_picking_id, new_picking_type_id
+        return new_picking
