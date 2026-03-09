@@ -1,7 +1,7 @@
 # Copyright 2020 Hunki Enterprises BV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import Command, fields, models
+from odoo import Command, _, fields, models
 from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare, float_is_zero
 
@@ -12,12 +12,12 @@ class StockSplitPicking(models.TransientModel):
 
     mode = fields.Selection(
         [
-            ("done", "Done quantities"),
+            ("quantity", "Quantities"),
             ("move", "One picking per move"),
             ("selection", "Select move lines to split off"),
         ],
         required=True,
-        default="done",
+        default="quantity",
     )
 
     picking_ids = fields.Many2many(
@@ -36,11 +36,13 @@ class StockSplitPicking(models.TransientModel):
     def _check_can_split_by_quantity(self):
         for picking in self.picking_ids:
             if all(
-                float_is_zero(m.quantity_done, precision_rounding=m.product_uom.rounding)
+                float_is_zero(
+                    m.quantity_done, precision_rounding=m.product_uom.rounding
+                )
                 for m in picking.move_ids
             ):
                 raise UserError(
-                    self.env._(
+                    _(
                         "%s: Nothing to split. Fill the quantities you want in a new "
                         "transfer in the done quantities",
                         picking.display_name,
@@ -56,7 +58,7 @@ class StockSplitPicking(models.TransientModel):
                 for m in picking.move_ids
             ):
                 raise UserError(
-                    self.env._(
+                    _(
                         "%s: Nothing to split, all demand is done. For split you need "
                         "at least one line not fully fulfilled",
                         picking.display_name,
@@ -92,7 +94,9 @@ class StockSplitPicking(models.TransientModel):
                 # If it's completely assigned, extract the move entirely
                 if (
                     float_compare(
-                        move.quantity_done, move.product_uom_qty, precision_rounding=rounding
+                        move.quantity_done,
+                        move.product_uom_qty,
+                        precision_rounding=rounding,
                     )
                     >= 0
                 ):
@@ -102,7 +106,9 @@ class StockSplitPicking(models.TransientModel):
                 # quantities in the original move.
                 split_moves_vals = move.with_context(cancel_backorder=False)._split(
                     move.product_uom._compute_quantity(
-                        move.quantity_done, move.product_id.uom_id, rounding_method="HALF-UP"
+                        move.quantity_done,
+                        move.product_id.uom_id,
+                        rounding_method="HALF-UP",
                     )
                 )
                 if not split_moves_vals:

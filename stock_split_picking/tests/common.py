@@ -15,8 +15,12 @@ class TestStockSplitPickingCase(TransactionCase):
         cls.env = cls.env(context=dict(cls.env.context, **DISABLED_MAIL_CONTEXT))
         cls.src_location = cls.env.ref("stock.stock_location_stock")
         cls.dest_location = cls.env.ref("stock.stock_location_customers")
-        cls.product = cls.env["product.product"].create({"name": "Test product"})
-        cls.product_2 = cls.env["product.product"].create({"name": "Test product 2"})
+        cls.product = cls.env["product.product"].create(
+            {"name": "Test product", "type": "product"}
+        )
+        cls.product_2 = cls.env["product.product"].create(
+            {"name": "Test product 2", "type": "product"}
+        )
         cls.product_consu = cls.env["product.product"].create(
             {"name": "Test product", "type": "consu"}
         )

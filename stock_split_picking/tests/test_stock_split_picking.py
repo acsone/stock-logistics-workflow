@@ -27,7 +27,7 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
         # Confirm picking
         self.picking.action_confirm()
         for move in self.picking.move_ids:
-            move.quantity = move.product_uom_qty
+            move.quantity_done = move.product_uom_qty
         # We can't split a draft picking
         with self.assertRaisesRegex(UserError, "Nothing to split, all demand is done."):
             self._split_picking(self.picking, mode="quantity")
@@ -109,7 +109,9 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
         )
         self.assertEqual(len(new_moves), 1, "Only one new move should be created")
         self.assertAlmostEqual(
-            new_moves.quantity_done, 4.0, "The new move should have the selected quantities"
+            new_moves.quantity_done,
+            4.0,
+            "The new move should have the selected quantities",
         )
         self.assertAlmostEqual(
             new_moves.product_uom_qty,
@@ -205,10 +207,9 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
         # Confirm picking
         self.picking_consu.action_confirm()
 
-
         # Split picking: the first move fully set, nothing on the second
-        self.move_consu.quantity = self.move_consu.product_uom_qty
-        self.move_consu_2.quantity = 0.0
+        self.move_consu.quantity_done = self.move_consu.product_uom_qty
+        self.move_consu_2.quantity_done = 0.0
 
         with (
             RecordCapturer(self.env["stock.picking"], []) as rc_picking,
@@ -249,7 +250,7 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
         self.picking.action_confirm()
 
         # Split picking: 4 units on the first move, second is cancelled
-        self.move.quantity = 4.0
+        self.move.quantity_done = 4.0
         self.move_2._action_cancel()
 
         with (
@@ -269,7 +270,7 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
         )
         self.assertEqual(len(new_moves), 1, "Only one new move should be created")
         self.assertAlmostEqual(
-            new_moves.quantity,
+            new_moves.quantity_done,
             4.0,
             "The new move should have the selected quantities",
         )
@@ -292,7 +293,7 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
             self.picking,
             "The original move should be in the original picking",
         )
-        self.assertAlmostEqual(self.move.quantity, 0.0)
+        self.assertAlmostEqual(self.move.quantity_done, 0.0)
         self.assertAlmostEqual(self.move.product_uom_qty, 6.0)
         self.assertEqual(self.move_2.state, "cancel")
 
