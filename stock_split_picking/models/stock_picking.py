@@ -30,9 +30,7 @@ class StockPicking(models.Model):
                 "The split order %s has been created.", split_picking._get_html_link()
             )
         )
-        split_picking.message_post(
-            body=_("Split off from %s", self._get_html_link())
-        )
+        split_picking.message_post(body=_("Split off from %s", self._get_html_link()))
         return split_picking
 
     def _split_off_moves(self, moves):

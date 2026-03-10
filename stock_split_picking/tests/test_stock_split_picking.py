@@ -68,7 +68,7 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
         )
 
         # And the backorder one is the original one, with the remaining quantities
-        self.assertEqual(self.picking_consu.state, "confirmed")
+        self.assertEqual(self.picking_consu.state, "assigned")
         self.assertEqual(
             self.move_consu.picking_id,
             self.picking_consu,
@@ -100,8 +100,8 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
             new_picking = rc_picking.records
             new_moves = rc_move.records
 
-        # We have a new picking with 4 units in state assigned
-        self.assertEqual(new_picking.state, "assigned")
+        # We have a new picking with 4 units in state confirmed (no stock available)
+        self.assertEqual(new_picking.state, "confirmed")
         self.assertEqual(
             new_picking.move_ids,
             new_moves,
@@ -187,7 +187,7 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
         )
 
         # And the backorder one is the original one, with the remaining quantities
-        self.assertEqual(self.picking.state, "confirmed")
+        self.assertEqual(self.picking.state, "assigned")
         self.assertEqual(
             self.move.picking_id,
             self.picking,
@@ -236,7 +236,7 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
         self.assertAlmostEqual(self.move_consu.product_uom_qty, 10.0)
 
         # And the backorder one is the original one, with the remaining quantities
-        self.assertEqual(self.picking_consu.state, "confirmed")
+        self.assertEqual(self.picking_consu.state, "assigned")
         self.assertEqual(
             self.picking_consu.move_ids,
             self.move_consu_2,
@@ -261,8 +261,8 @@ class TestStockSplitPicking(TestStockSplitPickingCase):
             new_picking = rc_picking.records
             new_moves = rc_move.records
 
-        # We have a new picking with 4 units in state assigned
-        self.assertEqual(new_picking.state, "assigned")
+        # We have a new picking with 4 units in state confirmed
+        self.assertEqual(new_picking.state, "confirmed")
         self.assertEqual(
             new_picking.move_ids,
             new_moves,

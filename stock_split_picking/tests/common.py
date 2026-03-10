@@ -13,8 +13,10 @@ class TestStockSplitPickingCase(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, **DISABLED_MAIL_CONTEXT))
+
         cls.src_location = cls.env.ref("stock.stock_location_stock")
         cls.dest_location = cls.env.ref("stock.stock_location_customers")
+
         cls.product = cls.env["product.product"].create(
             {"name": "Test product", "type": "product"}
         )
@@ -28,15 +30,7 @@ class TestStockSplitPickingCase(TransactionCase):
             {"name": "Test product 2", "type": "consu"}
         )
         cls.partner = cls.env["res.partner"].create({"name": "Test partner"})
-        cls.picking = cls.env["stock.picking"].create(
-            {
-                "partner_id": cls.partner.id,
-                "picking_type_id": cls.env.ref("stock.picking_type_out").id,
-                "location_id": cls.src_location.id,
-                "location_dest_id": cls.dest_location.id,
-            }
-        )
-
+        cls.picking = cls._create_picking()
         cls.move = cls._create_stock_move(cls.product, cls.picking)
         cls.move_2 = cls._create_stock_move(cls.product_2, cls.picking)
         cls.picking_consu = cls._create_picking()
