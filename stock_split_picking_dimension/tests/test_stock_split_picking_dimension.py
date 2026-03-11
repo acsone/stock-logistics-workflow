@@ -38,7 +38,7 @@ class TestStockSplitPickingDimension(TestStockSplitPickingCase):
                 "weight": 15,
             }
         )
-        cls.move_3 = cls._create_stock_move(cls.product_3)
+        cls.move_3 = cls._create_stock_move(cls.product_3, cls.picking)
         # To ease tests, we set the quantity of the move to 1
         cls.picking.move_ids.product_uom_qty = 1
 
