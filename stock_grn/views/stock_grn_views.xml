@@ -74,6 +74,7 @@
               <field name="from_info" />
               <field name="ref" />
               <field name="description" />
+              <field name="dock_ids" widget="many2many_tags" />
             </group>
           </group>
             <label for="picking_ids" />
