@@ -21,3 +21,8 @@ class StockPicking(models.Model):
         store=True,
         readonly=True,
     )
+    dock_ids = fields.Many2many(
+        comodel_name="stock.dock",
+        string="Docks",
+        related="grn_id.dock_ids",
+    )
