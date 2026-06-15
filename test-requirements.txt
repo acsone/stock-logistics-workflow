@@ -1,1 +1,3 @@
 odoo-test-helper
+
+odoo-addon-stock-package-level-name @ git+https://github.com/OCA/stock-logistics-tracking@refs/pull/62/head#subdirectory=setup/stock_package_level_name
