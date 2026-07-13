@@ -13,6 +13,7 @@ class StockMove(models.Model):
         string="First Move",
         readonly=True,
         index=True,
+        copy=False,
         help="The original move which generated this one.",
     )
     first_picking_type_id = fields.Many2one(
